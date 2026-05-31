@@ -1,5 +1,5 @@
-//apt install libtorrent-rasterbar-dev libfltk1.3-dev libboost-thread-dev
-//g++ fltorrent.cxx -o fltorrent $(fltk-config --cxxflags --ldflags) -ltorrent-rasterbar -lboost_system -lboost_thread -lpthread
+//apt install libtorrent-rasterbar-dev libfltk1.3-dev
+//g++ fltorrent.cxx -o fltorrent $(fltk-config --cxxflags --ldflags) -ltorrent-rasterbar
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
