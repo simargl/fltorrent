@@ -28,6 +28,7 @@ jobs:
 
       - name: Build the project
         run: |
+          mkdir build
           cd build
           g++ ../fltorrent.cxx -o fltorrent $(fltk-config --cxxflags --ldflags) -ltorrent-rasterbar -lboost_system -lboost_thread -lpthread
 
