@@ -1,93 +1,90 @@
 name: Build fltorrent for Linux
 
 env:
-FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
-push:
-branches:
-- main
-pull_request:
-branches:
-- main
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
 
 permissions:
-contents: write
+  contents: write
 
 jobs:
-build:
-runs-on: ubuntu-22.04
+  build:
+    runs-on: ubuntu-22.04
 
-```
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v4
-    with:
-      fetch-depth: 0
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-  - name: Install dependencies
-    run: |
-      sudo apt-get update
-      sudo apt-get install -y \
-        build-essential \
-        cmake \
-        libfltk1.3-dev \
-        libtorrent-rasterbar-dev \
-        libboost-thread-dev \
-        libboost-system-dev
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            libfltk1.3-dev \
+            libtorrent-rasterbar-dev \
+            libboost-thread-dev \
+            libboost-system-dev
 
-  - name: Build the project
-    run: |
-      mkdir -p build
-      cd build
+      - name: Build the project
+        run: |
+          mkdir -p build
+          cd build
 
-      g++ ../fltorrent.cxx \
-        -o fltorrent \
-        $(fltk-config --cxxflags --ldflags) \
-        -ltorrent-rasterbar \
-        -lboost_system \
-        -lboost_thread \
-        -lpthread
+          g++ ../fltorrent.cxx \
+            -o fltorrent \
+            $(fltk-config --cxxflags --ldflags) \
+            -ltorrent-rasterbar \
+            -lboost_system \
+            -lboost_thread \
+            -lpthread
 
-  - name: Upload build artifacts
-    uses: actions/upload-artifact@v4
-    with:
-      name: fltorrent-linux
-      path: build/fltorrent
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fltorrent-linux
+          path: build/fltorrent
 
-  - name: Delete old releases and tags
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    run: |
-      gh release list --limit 100 --json tagName -q '.[].tagName' | while read TAG; do
-        if [ -n "$TAG" ]; then
-          echo "Deleting release $TAG"
+      - name: Delete old releases and tags
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release list --limit 100 --json tagName -q '.[].tagName' | while read TAG; do
+            if [ -n "$TAG" ]; then
+              echo "Deleting release $TAG"
+              gh release delete "$TAG" --yes || true
+              git push origin ":refs/tags/$TAG" || true
+            fi
+          done
 
-          gh release delete "$TAG" --yes || true
+      - name: Create current release tag
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          TAG=v${{ github.run_number }}
 
-          git push origin ":refs/tags/$TAG" || true
-        fi
-      done
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-  - name: Create tag for current release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    run: |
-      TAG=v${{ github.run_number }}
+          git tag -f "$TAG"
+          git push origin "$TAG" --force
 
-      git config user.name "github-actions[bot]"
-      git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      git tag -f "$TAG"
-      git push origin "$TAG" --force
-
-  - name: Create GitHub Release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    uses: softprops/action-gh-release@v2
-    with:
-      tag_name: v${{ github.run_number }}
-      name: Release v${{ github.run_number }}
-      files: build/fltorrent
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          files: build/fltorrent
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
