@@ -7,9 +7,7 @@ A lightweight BitTorrent client built with **FLTK** and **libtorrent-rasterbar**
 ```bash
 sudo apt install libtorrent-rasterbar-dev libfltk1.3-dev libboost-thread-dev
 
-g++ fltorrent.cxx -o fltorrent \
-$(fltk-config --cxxflags --ldflags) \
--ltorrent-rasterbar -lboost_system -lboost_thread -lpthread
+g++ fltorrent.cxx -o fltorrent $(fltk-config --cxxflags --ldflags) -ltorrent-rasterbar -lboost_system -lboost_thread -lpthread
 ```
 
 ## Run
