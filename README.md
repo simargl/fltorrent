@@ -1,6 +1,6 @@
 # FLTK Torrent Client
 
-A lightweight BitTorrent client for Linux built with **FLTK** and **libtorrent-rasterbar**.
+A lightweight BitTorrent client built with **FLTK** and **libtorrent-rasterbar**.
 
 ## Build
 
