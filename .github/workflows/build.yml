@@ -44,10 +44,7 @@ jobs:
           g++ ../fltorrent.cxx \
             -o fltorrent \
             $(fltk-config --cxxflags --ldflags) \
-            -ltorrent-rasterbar \
-            -lboost_system \
-            -lboost_thread \
-            -lpthread
+            -ltorrent-rasterbar
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
