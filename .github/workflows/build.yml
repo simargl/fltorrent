@@ -40,3 +40,10 @@ jobs:
         with:
           name: fltorrent-linux
           path: build/fltorrent
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/fltorrent
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
