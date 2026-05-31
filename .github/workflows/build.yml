@@ -26,21 +26,13 @@ jobs:
             libtorrent-rasterbar-dev \
             libboost-thread-dev
 
-      - name: Create build directory
-        run: mkdir -p build && cd build
-
-      - name: Configure the build
-        run: |
-          cd build
-          g++ ../fltorrent.cxx -o fltorrent $(fltk-config --cxxflags --ldflags) -ltorrent-rasterbar -lboost_system -lboost_thread -lpthread
-
       - name: Build the project
         run: |
           cd build
-          make -j$(nproc)
+          g++ ../fltorrent.cxx -o fltorrent $(fltk-config --cxxflags --ldflags) -ltorrent-rasterbar -lboost_system -lboost_thread -lpthread
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: fltorrent-linux
-          path: build/fltorrent  # Adjust the path if the binary name or location differs
+          path: build/fltorrent
